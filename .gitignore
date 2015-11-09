@@ -2,6 +2,7 @@
 *.o
 *.a
 *.so
+dhtproxy
 
 # Folders
 _obj
@@ -22,3 +23,5 @@ _testmain.go
 *.exe
 *.test
 *.prof
+
+*~
