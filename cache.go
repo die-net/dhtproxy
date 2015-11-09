@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/youtube/vitess/go/cache"
 	"github.com/nictuku/dht"
+	"github.com/youtube/vitess/go/cache"
 	"math/rand"
 	"sync"
 )

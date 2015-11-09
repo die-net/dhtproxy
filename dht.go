@@ -44,7 +44,7 @@ func (d *DhtNode) Find(ih dht.InfoHash) {
 }
 
 func (d *DhtNode) Stop() {
-        // This stops dht.Run() but leaks channels.
+	// This stops dht.Run() but leaks channels.
 	d.node.Stop()
 
 	d.node = nil
