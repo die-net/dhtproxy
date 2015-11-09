@@ -31,7 +31,7 @@ func trackerHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response := &TrackerResponse{
+	response := TrackerResponse{
 		Interval:    300,
 		MinInterval: 60,
 	}
@@ -56,7 +56,7 @@ func trackerHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/octet-stream")
 
-	if err := bencode.Marshal(w, *response); err != nil {
+	if err := bencode.Marshal(w, response); err != nil {
 		http.Error(w, err.Error(), 500)
 	}
 }

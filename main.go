@@ -26,7 +26,7 @@ func main() {
 
 	runtime.GOMAXPROCS(*workers)
 
-	peerCache := NewPeerCache(*peerCacheSize, *maxWant)
+	peerCache = NewPeerCache(*peerCacheSize, *maxWant)
 	var err error
 	dhtNode, err = NewDhtNode(*dhtPortUDP, *targetNumPeers, peerCache)
 	if err != nil {
