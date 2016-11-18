@@ -1,0 +1,15 @@
+language: go
+
+go:
+  - 1.4
+  - 1.5
+  - 1.6
+  - 1.7
+
+install:
+  - # Do nothing.
+
+script:
+  - go get -t -v ./...
+  - diff -u <(echo -n) <(gofmt -d -s .)
+  - go tool vet -structtags=false .
