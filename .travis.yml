@@ -3,11 +3,16 @@ dist: trusty
 
 language: go
 
-go:
-  - 1.4.3
-  - 1.5.4
-  - 1.6.3
-  - 1.7.3
+matrix:
+  include:
+  - go: 1.4.3
+    env: GOVET=false
+  - go: 1.5.4
+    env: GOVET=true
+  - go: 1.6.3
+    env: GOVET=true
+  - go: 1.7.3
+    env: GOVET=true
 
 install:
   - # Do nothing.
@@ -15,4 +20,4 @@ install:
 script:
   - go get -t -v ./...
   - diff -u <(echo -n) <(gofmt -d -s .)
-  - go tool vet -structtags=false .
+  - if [ "$GOVET" = "true" ]; then go tool vet -structtags=false .; fi
