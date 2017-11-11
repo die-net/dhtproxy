@@ -2,6 +2,8 @@ package main
 
 import (
 	"github.com/nictuku/dht"
+	"log"
+	"time"
 )
 
 func init() {
@@ -9,26 +11,58 @@ func init() {
 }
 
 type DhtNode struct {
-	node *dht.DHT
+	port           int
+	numTargetPeers int
+	node           *dht.DHT
+	c              *PeerCache
+	resetter       *time.Ticker
 }
 
-func NewDhtNode(port, numTargetPeers int, c *PeerCache) (*DhtNode, error) {
-	conf := dht.NewConfig()
-	conf.Port = port
-	conf.NumTargetPeers = numTargetPeers
+func NewDhtNode(port, numTargetPeers int, resetInterval time.Duration, c *PeerCache) (*DhtNode, error) {
+	d := &DhtNode{
+		port:           port,
+		numTargetPeers: numTargetPeers,
+	}
 
-	node, err := dht.New(conf)
-	if err != nil {
+	if err := d.Reset(); err != nil {
 		return nil, err
 	}
 
-	d := &DhtNode{node: node}
+	if resetInterval > 0 {
+		d.resetter = time.NewTicker(resetInterval)
+		go d.doResets()
+	}
+
+	return d, nil
+}
+
+func (d *DhtNode) Reset() error {
+	d.stop()
+
+	conf := dht.NewConfig()
+	conf.Port = d.port
+	conf.NumTargetPeers = d.numTargetPeers
+
+	node, err := dht.New(conf)
+	if err != nil {
+		return err
+	}
+
+	d.node = node
 
 	go d.node.Run()
 
-	go d.drainResults(c)
+	go d.drainResults(d.c)
 
-	return d, nil
+	return nil
+}
+
+func (d *DhtNode) doResets() {
+	for range d.resetter.C {
+		if err := d.Reset(); err != nil {
+			log.Fatal("DHT reset failed: ", err)
+		}
+	}
 }
 
 func (d *DhtNode) drainResults(c *PeerCache) {
@@ -40,12 +74,24 @@ func (d *DhtNode) drainResults(c *PeerCache) {
 }
 
 func (d *DhtNode) Find(ih dht.InfoHash) {
-	d.node.PeersRequest(string(ih), false)
+	// TODO: This is still racy vs Reset()
+	if d.node != nil {
+		d.node.PeersRequest(string(ih), false)
+	}
 }
 
 func (d *DhtNode) Stop() {
-	// This stops dht.Run() but leaks channels.
-	d.node.Stop()
+	if d.resetter != nil {
+		d.resetter.Stop()
+	}
+	d.stop()
+}
 
+func (d *DhtNode) stop() {
+	node := d.node
 	d.node = nil
+
+	if node != nil {
+		node.Stop()
+	}
 }
