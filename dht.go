@@ -22,6 +22,7 @@ func NewDhtNode(port, numTargetPeers int, resetInterval time.Duration, c *PeerCa
 	d := &DhtNode{
 		port:           port,
 		numTargetPeers: numTargetPeers,
+		c:              c,
 	}
 
 	if err := d.Reset(); err != nil {
