@@ -16,4 +16,4 @@ install:
 script:
   - go get -t -v ./...
   - diff -u <(echo -n) <(gofmt -d -s .)
-  - go tool vet -structtags=false
+  - go tool vet -structtags=false .
