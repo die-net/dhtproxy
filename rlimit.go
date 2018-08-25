@@ -11,16 +11,14 @@ var maxConnections = flag.Int("maxConnections", getRlimitMax(syscall.RLIMIT_NOFI
 func getRlimitMax(resource int) int {
 	var rlimit syscall.Rlimit
 
-	err := syscall.Getrlimit(resource, &rlimit)
-
-	if err == nil {
-		return int(rlimit.Max)
-	} else {
+	if err := syscall.Getrlimit(resource, &rlimit); err != nil {
 		return 0
 	}
+
+	return int(rlimit.Max)
 }
 
-func setRlimit(resource int, value int) {
+func setRlimit(resource, value int) {
 	rlimit := &syscall.Rlimit{Cur: uint64(value), Max: uint64(value)}
 
 	err := syscall.Setrlimit(resource, rlimit)

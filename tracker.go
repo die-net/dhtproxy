@@ -25,8 +25,8 @@ func trackerHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	info_hash := dht.InfoHash(r.FormValue("info_hash"))
-	if len(info_hash) != 20 {
+	infoHash := dht.InfoHash(r.FormValue("info_hash"))
+	if len(infoHash) != 20 {
 		http.Error(w, "Bad info_hash.", 400)
 		return
 	}
@@ -36,9 +36,9 @@ func trackerHandler(w http.ResponseWriter, r *http.Request) {
 		MinInterval: 60,
 	}
 
-	peers, ok := peerCache.Get(info_hash)
+	peers, ok := peerCache.Get(infoHash)
 
-	dhtNode.Find(info_hash)
+	dhtNode.Find(infoHash)
 
 	if !ok || len(peers) == 0 {
 		response.Interval = 30
@@ -46,7 +46,7 @@ func trackerHandler(w http.ResponseWriter, r *http.Request) {
 
 		time.Sleep(5 * time.Second)
 
-		peers, ok = peerCache.Get(info_hash)
+		peers, ok = peerCache.Get(infoHash)
 	}
 
 	if ok && len(peers) > 0 {
