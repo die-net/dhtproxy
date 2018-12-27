@@ -1,22 +1,21 @@
 package main
 
 import (
-	bencode "github.com/jackpal/bencode-go"
-	"github.com/nictuku/dht"
 	"net/http"
 	"strings"
 	"time"
+
+	bencode "github.com/jackpal/bencode-go"
+	"github.com/nictuku/dht"
 )
 
 type TrackerResponse struct {
-	// FailureReason  string "failure reason"
-	// WarningMessage string "warning message"
-	Interval    int64 "interval"
-	MinInterval int64 "min interval"
-	// TrackerId      string "tracker id"
-	Complete   int    "complete"
-	Incomplete int    "incomplete"
-	Peers      string "peers"
+	// Bencode-go uses non-comformant struct tags
+	Interval    int64  "interval"     //nolint:govet
+	MinInterval int64  "min interval" //nolint:govet
+	Complete    int    "complete"     //nolint:govet
+	Incomplete  int    "incomplete"   //nolint:govet
+	Peers       string "peers"        //nolint:govet
 }
 
 func trackerHandler(w http.ResponseWriter, r *http.Request) {

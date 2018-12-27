@@ -1,10 +1,11 @@
 package main
 
 import (
-	"github.com/nictuku/dht"
-	"github.com/youtube/vitess/go/cache"
 	"math/rand"
 	"sync"
+
+	"github.com/nictuku/dht"
+	"github.com/youtube/vitess/go/cache"
 )
 
 type peerList struct {

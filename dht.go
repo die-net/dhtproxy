@@ -1,9 +1,10 @@
 package main
 
 import (
-	"github.com/nictuku/dht"
 	"log"
 	"time"
+
+	"github.com/nictuku/dht"
 )
 
 func init() {
@@ -51,7 +52,7 @@ func (d *DhtNode) Reset() error {
 
 	d.node = node
 
-	go d.node.Run()
+	go func() { _ = d.node.Run() }()
 
 	go d.drainResults(d.c)
 
@@ -84,15 +85,14 @@ func (d *DhtNode) Find(ih dht.InfoHash) {
 func (d *DhtNode) Stop() {
 	if d.resetter != nil {
 		d.resetter.Stop()
+		d.resetter = nil
 	}
 	d.stop()
 }
 
 func (d *DhtNode) stop() {
-	node := d.node
-	d.node = nil
-
-	if node != nil {
-		node.Stop()
+	if d.node != nil {
+		d.node.Stop()
+		d.node = nil
 	}
 }
