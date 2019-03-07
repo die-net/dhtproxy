@@ -40,17 +40,21 @@ func (c *PeerCache) Add(ih dht.InfoHash, peers []string) {
 		list = &peerList{}
 	}
 
-	// Append peers up to listLimit.
-	n := c.listLimit - len(list.peers)
-	if len(peers) < n {
-		n = len(peers)
-	}
-	list.peers = append(list.peers, peers[:n]...)
-	peers = peers[n:]
-
-	// Randomly replace existing peers beyond listLimit.
+peers:
 	for _, peer := range peers {
-		list.peers[rand.Intn(len(list.peers))] = peer
+		// If we already have this peer in the list of peers, don't add it.
+		for _, p := range list.peers {
+			if p == peer {
+				continue peers
+			}
+		}
+
+		// Append peers up to listLimit, then randomly replace one.
+		if len(list.peers) < c.listLimit {
+			list.peers = append(list.peers, peer)
+		} else {
+			list.peers[rand.Intn(len(list.peers))] = peer
+		}
 	}
 
 	c.lru.Set(string(ih), list)

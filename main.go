@@ -14,7 +14,7 @@ var (
 	debugAddr        = flag.String("debugListen", "", "The [IP]:port to listen for pprof HTTP requests. (\"\" = disable)")
 	workers          = flag.Int("workers", runtime.NumCPU(), "The number of worker threads to execute.")
 	dhtPortUDP       = flag.Int("dhtPortUDP", 0, "The UDP port number to use for DHT requests")
-	dhtResetInterval = flag.Duration("dhtResetInterval", 24*time.Hour, "How often to reset the DHT client (0 = disable)")
+	dhtResetInterval = flag.Duration("dhtResetInterval", time.Hour, "How often to reset the DHT client (0 = disable)")
 	targetNumPeers   = flag.Int("targetNumPeers", 8, "The number of DHT peers to try to find for a given node")
 	peerCacheSize    = flag.Int64("peerCacheSize", 16384, "The max number of infohash+peer pairs to keep.")
 	maxWant          = flag.Int("maxWant", 100, "The largest number of peers to return in one request.")
