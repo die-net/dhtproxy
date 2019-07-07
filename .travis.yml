@@ -1,6 +1,4 @@
-sudo: false
-dist: trusty
-
+dist: xenial
 language: go
 
 matrix:
@@ -17,4 +15,4 @@ install:
 script:
   - go get -t -v ./...
   - diff -u <(echo -n) <(gofmt -d -s .)
-  - go tool vet -structtags=false .
+  - go test ./...
