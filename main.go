@@ -4,7 +4,7 @@ import (
 	"flag"
 	"log"
 	"net/http"
-	_ "net/http/pprof"
+	_ "net/http/pprof" //nolint:gosec // TODO: Expose this on a different port.
 	"runtime"
 	"time"
 )
