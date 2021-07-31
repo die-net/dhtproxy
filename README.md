@@ -1,4 +1,4 @@
-# dhtproxy [![Build Status](https://travis-ci.org/die-net/dhtproxy.svg?branch=master)](https://travis-ci.org/die-net/dhtproxy)
+# dhtproxy [![Build Status](https://github.com/die-net/dhtproxy/actions/workflows/go-test.yml/badge.svg)](https://github.com/die-net/dhtproxy/actions/workflows/go-test.yml) [![Go Report Card](https://goreportcard.com/badge/github.com/die-net/dhtproxy)](https://goreportcard.com/report/github.com/die-net/dhtproxy)
 
 This is a proxy that accepts BitTorrent tracker [announce requests](https://wiki.theory.org/BitTorrent_Tracker_Protocol) over HTTP and converts them to [mainline DHT](https://en.wikipedia.org/wiki/Mainline_DHT) lookups.  This allows clients which are unable to use DHT to bootstrap some peers in a trackerless swarm, after which it can hopefully use [PeX](https://en.wikipedia.org/wiki/Peer_exchange) to find more.
 

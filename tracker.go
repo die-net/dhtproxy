@@ -10,12 +10,11 @@ import (
 )
 
 type TrackerResponse struct {
-	// Bencode-go uses non-comformant struct tags
-	Interval    int64  "interval"     //nolint:govet
-	MinInterval int64  "min interval" //nolint:govet
-	Complete    int    "complete"     //nolint:govet
-	Incomplete  int    "incomplete"   //nolint:govet
-	Peers       string "peers"        //nolint:govet
+	Interval    int64  "interval"     //nolint:govet // Bencode-go uses non-comformant struct tags
+	MinInterval int64  "min interval" //nolint:govet // Bencode-go uses non-comformant struct tags
+	Complete    int    "complete"     //nolint:govet // Bencode-go uses non-comformant struct tags
+	Incomplete  int    "incomplete"   //nolint:govet // Bencode-go uses non-comformant struct tags
+	Peers       string "peers"        //nolint:govet // Bencode-go uses non-comformant struct tags
 }
 
 func trackerHandler(w http.ResponseWriter, r *http.Request) {
