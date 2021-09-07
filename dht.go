@@ -4,6 +4,8 @@ import (
 	"log"
 	"time"
 
+	"github.com/die-net/dhtproxy/peercache"
+
 	"github.com/nictuku/dht"
 )
 
@@ -15,11 +17,11 @@ type DhtNode struct {
 	port           int
 	numTargetPeers int
 	node           *dht.DHT
-	c              *PeerCache
+	c              *peercache.Cache
 	resetter       *time.Ticker
 }
 
-func NewDhtNode(port, numTargetPeers int, resetInterval time.Duration, c *PeerCache) (*DhtNode, error) {
+func NewDhtNode(port, numTargetPeers int, resetInterval time.Duration, c *peercache.Cache) (*DhtNode, error) {
 	d := &DhtNode{
 		port:           port,
 		numTargetPeers: numTargetPeers,
@@ -67,10 +69,10 @@ func (d *DhtNode) doResets() {
 	}
 }
 
-func (d *DhtNode) drainResults(c *PeerCache) {
+func (d *DhtNode) drainResults(c *peercache.Cache) {
 	for r := range d.node.PeersRequestResults {
 		for ih, peers := range r {
-			c.Add(ih, peers)
+			c.Add(string(ih), peers)
 		}
 	}
 }
