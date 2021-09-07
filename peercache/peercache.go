@@ -1,11 +1,10 @@
-package main
+package peercache
 
 import (
 	"math/rand"
 	"sync"
 
-	"github.com/nictuku/dht"
-	"github.com/youtube/vitess/go/cache"
+	simplelru "github.com/hashicorp/golang-lru/simplelru"
 )
 
 type peerList struct {
@@ -16,24 +15,29 @@ func (p *peerList) Size() int {
 	return len(p.peers)
 }
 
-type PeerCache struct {
-	lru *cache.LRUCache
-	sync.RWMutex
+type Cache struct {
 	listLimit int
+	mu        sync.Mutex // This can't be a RWMutex because lru.Get() reorders the list.
+	lru       *simplelru.LRU
 }
 
-func NewPeerCache(size int64, listLimit int) *PeerCache {
-	c := &PeerCache{
-		lru:       cache.NewLRUCache(size),
+func New(size, listLimit int) (*Cache, error) {
+	lru, err := simplelru.NewLRU(size, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	c := &Cache{
+		lru:       lru,
 		listLimit: listLimit,
 	}
 
-	return c
+	return c, nil
 }
 
-func (c *PeerCache) Add(ih dht.InfoHash, peers []string) {
-	c.Lock()
-	defer c.Unlock()
+func (c *Cache) Add(ih string, peers []string) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
 
 	list, ok := c.get(ih)
 	if !ok || list == nil {
@@ -57,12 +61,12 @@ peers:
 		}
 	}
 
-	c.lru.Set(string(ih), list)
+	c.lru.Add(ih, list)
 }
 
-func (c *PeerCache) Get(ih dht.InfoHash) ([]string, bool) {
-	c.RLock()
-	defer c.RUnlock()
+func (c *Cache) Get(ih string) ([]string, bool) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
 
 	if list, ok := c.get(ih); ok && list != nil {
 		return list.peers, true
@@ -71,8 +75,8 @@ func (c *PeerCache) Get(ih dht.InfoHash) ([]string, bool) {
 	return nil, false
 }
 
-func (c *PeerCache) get(ih dht.InfoHash) (*peerList, bool) {
-	p, ok := c.lru.Get(string(ih))
+func (c *Cache) get(ih string) (*peerList, bool) {
+	p, ok := c.lru.Get(ih)
 	if !ok {
 		return nil, false
 	}

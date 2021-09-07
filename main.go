@@ -7,6 +7,8 @@ import (
 	_ "net/http/pprof" //nolint:gosec // TODO: Expose this on a different port.
 	"runtime"
 	"time"
+
+	"github.com/die-net/dhtproxy/peercache"
 )
 
 var (
@@ -16,10 +18,10 @@ var (
 	dhtPortUDP       = flag.Int("dhtPortUDP", 0, "The UDP port number to use for DHT requests")
 	dhtResetInterval = flag.Duration("dhtResetInterval", time.Hour, "How often to reset the DHT client (0 = disable)")
 	targetNumPeers   = flag.Int("targetNumPeers", 8, "The number of DHT peers to try to find for a given node")
-	peerCacheSize    = flag.Int64("peerCacheSize", 16384, "The max number of infohash+peer pairs to keep.")
+	peerCacheSize    = flag.Int("peerCacheSize", 16384, "The max number of infohash+peer pairs to keep.")
 	maxWant          = flag.Int("maxWant", 100, "The largest number of peers to return in one request.")
 
-	peerCache *PeerCache
+	peerCache *peercache.Cache
 	dhtNode   *DhtNode
 )
 
@@ -30,8 +32,12 @@ func main() {
 
 	runtime.GOMAXPROCS(*workers)
 
-	peerCache = NewPeerCache(*peerCacheSize, *maxWant)
 	var err error
+	peerCache, err = peercache.New(*peerCacheSize, *maxWant)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	dhtNode, err = NewDhtNode(*dhtPortUDP, *targetNumPeers, *dhtResetInterval, peerCache)
 	if err != nil {
 		log.Fatal(err)

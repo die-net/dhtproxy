@@ -34,7 +34,7 @@ func trackerHandler(w http.ResponseWriter, r *http.Request) {
 		MinInterval: 60,
 	}
 
-	peers, ok := peerCache.Get(infoHash)
+	peers, ok := peerCache.Get(string(infoHash))
 
 	dhtNode.Find(infoHash)
 
@@ -44,7 +44,7 @@ func trackerHandler(w http.ResponseWriter, r *http.Request) {
 
 		time.Sleep(5 * time.Second)
 
-		peers, ok = peerCache.Get(infoHash)
+		peers, ok = peerCache.Get(string(infoHash))
 	}
 
 	if ok && len(peers) > 0 {
