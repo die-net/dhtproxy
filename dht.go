@@ -10,6 +10,14 @@ import (
 )
 
 func init() {
+	// Current list of bootstrap nodes from:
+	// https://git.deluge-torrent.org/deluge/tree/deluge/core/preferencesmanager.py#n274
+	dht.DefaultConfig.DHTRouters = "router.bittorrent.com:6881,router.utorrent.com:6881,router.bitcomet.com:6881,dht.transmissionbt.com:6881,dht.aelitis.com:6881"
+
+	// Don't rate-limit (by silently dropping) packets by default.
+	// Assume we want the info.
+	dht.DefaultConfig.RateLimit = -1
+
 	dht.RegisterFlags(nil)
 }
 
@@ -80,6 +88,11 @@ func (d *DhtNode) drainResults(c *peercache.Cache) {
 func (d *DhtNode) Find(ih dht.InfoHash) {
 	// TODO: This is still racy vs Reset()
 	if d.node != nil {
+		timer := time.AfterFunc(time.Minute, func() {
+			log.Fatal("d.node.PeersRequest() took longer than a minute.")
+		})
+		defer timer.Stop()
+
 		d.node.PeersRequest(string(ih), false)
 	}
 }
@@ -94,6 +107,11 @@ func (d *DhtNode) Stop() {
 
 func (d *DhtNode) stop() {
 	if d.node != nil {
+		timer := time.AfterFunc(time.Minute, func() {
+			log.Fatal("d.node.Stop() took longer than a minute.")
+		})
+		defer timer.Stop()
+
 		d.node.Stop()
 		d.node = nil
 	}
