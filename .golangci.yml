@@ -16,14 +16,12 @@ linters:
   enable:
     - asciicheck
     - bodyclose
-    - deadcode
-    - depguard
+    - err113
     - errcheck
     - errorlint
     - exhaustive
     - exportloopref
     - gocritic
-    - goerr113
     - gofumpt
     - goimports
     - goprintffuncname
@@ -42,11 +40,10 @@ linters:
     - rowserrcheck
     - sqlclosecheck
     - staticcheck
-    - structcheck
     - tparallel
     - typecheck
     - unconvert
-    - varcheck
+    - unused
     - wastedassign
 
   fast: false
@@ -58,9 +55,9 @@ linters-settings:
     # default is false: such cases aren't reported by default.
     check-blank: false
 
-    # [deprecated] comma-separated list of pairs of the form pkg:regex
-    # the regex is used to ignore names within pkg. (default "fmt:.*").
-    ignore: fmt:.*,bufio:Write(String)?,database/sql:Close,io:Close,net:Close,os:(Close|Remove(All)?|Setenv),github.com/go-kit/kit/log:Log
+    # List of functions to exclude from checking, where each entry is a single function to exclude.
+    # See https://github.com/kisielk/errcheck#excluding-functions for details.
+    # exclude-functions:
   exhaustive:
     # If enum-like constants don't use all cases in a switch statement,
     # consider a default good enough.
@@ -208,7 +205,8 @@ linters-settings:
 # output configuration options
 output:
   # colored-line-number|line-number|json|tab|checkstyle, default is "colored-line-number"
-  format: line-number
+  formats:
+    - format: line-number
 
   # print lines of code with issue, default is true
   print-issued-lines: false
@@ -257,7 +255,7 @@ issues:
     - G304. Potential file inclusion via variable
 
     # gosec: Complaining about every use of math/rand is annoying.
-    - G404. Use of weak random number generator .math/rand instead of crypto/rand.
+    - G404. Use of weak random number generator
 
     # gosec: We're allowing SHA1 for now, but MD5, DES, and RC4 need to be audited
     - G401. Use of weak cryptographic primitive
