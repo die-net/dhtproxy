@@ -55,7 +55,8 @@ func main() {
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/robots.txt", robotsDisallowHandler)
-	mux.HandleFunc("/announce", trackerHandler)
+	mux.HandleFunc("/announce", announceHandler)
+	mux.HandleFunc("/scrape", scrapeHandler)
 
 	srv := &http.Server{
 		Addr:         *listenAddr,
